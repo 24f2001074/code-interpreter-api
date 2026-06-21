@@ -40,12 +40,13 @@ def code_interpreter(req: CodeRequest):
     except Exception:
         tb = traceback.format_exc()
 
-        match = re.search(r'File "<string>", line (\d+)', tb)
+        matches = re.findall(r'File "<string>", line (\d+)', tb)
+
+        error_line = []
+        if matches:
+            error_line = [int(matches[0])]
 
         return {
-            "error": [int(match.group(1))] if match else [],
+            "error": error_line,
             "result": tb
-        }
-
-    finally:
-        sys.stdout = old_stdout
+            }
