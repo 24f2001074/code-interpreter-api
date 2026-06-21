@@ -9,11 +9,11 @@ import re
 app = FastAPI()
 
 app.add_middleware(
-CORSMiddleware,
-allow_origins=["*"],
-allow_credentials=True,
-allow_methods=["*"],
-allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 class CodeRequest(BaseModel):
@@ -28,30 +28,28 @@ def code_interpreter(req: CodeRequest):
     old_stdout = sys.stdout
     sys.stdout = StringIO()
 
-```
-try:
-    exec(req.code)
-    output = sys.stdout.getvalue()
+    try:
+        exec(req.code)
+        output = sys.stdout.getvalue()
 
-    return {
-        "error": [],
-        "result": output
-    }
+        return {
+            "error": [],
+            "result": output
+        }
 
-except Exception:
-    tb = traceback.format_exc()
+    except Exception:
+        tb = traceback.format_exc()
 
-    lines = []
-    matches = re.findall(r'File "<string>", line (\\d+)', tb)
+        lines = []
+        matches = re.findall(r'File "<string>", line (\d+)', tb)
 
-    for m in matches:
-        lines.append(int(m))
+        for m in matches:
+            lines.append(int(m))
 
-    return {
-        "error": sorted(list(set(lines))),
-        "result": tb
-    }
+        return {
+            "error": sorted(list(set(lines))),
+            "result": tb
+        }
 
-finally:
-    sys.stdout = old_stdout
-```
+    finally:
+        sys.stdout = old_stdout
