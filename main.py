@@ -17,16 +17,16 @@ allow_headers=["*"],
 )
 
 class CodeRequest(BaseModel):
-code: str
+    code: str
 
 @app.get("/")
 def root():
-return {"status": "ok"}
+    return {"status": "ok"}
 
 @app.post("/code-interpreter")
 def code_interpreter(req: CodeRequest):
-old_stdout = sys.stdout
-sys.stdout = StringIO()
+    old_stdout = sys.stdout
+    sys.stdout = StringIO()
 
 ```
 try:
