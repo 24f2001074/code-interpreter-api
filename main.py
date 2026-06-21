@@ -29,7 +29,7 @@ def code_interpreter(req: CodeRequest):
     sys.stdout = StringIO()
 
     try:
-        exec(req.code)
+        exec(req.code, {})
         output = sys.stdout.getvalue()
 
         return {
@@ -40,13 +40,12 @@ def code_interpreter(req: CodeRequest):
     except Exception:
         tb = traceback.format_exc()
 
-        matches = re.findall(r'File "<string>", line (\d+)', tb)
-
-        error_line = []
-        if matches:
-            error_line = [int(matches[-1])]
+        match = re.search(r'File "<string>", line (\d+)', tb)
 
         return {
-            "error": error_line,
+            "error": [int(match.group(1))] if match else [],
             "result": tb
         }
+
+    finally:
+        sys.stdout = old_stdout
