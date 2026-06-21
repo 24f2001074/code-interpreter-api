@@ -38,15 +38,13 @@ def code_interpreter(req: CodeRequest):
         }
 
     except Exception:
-        tb = traceback.format_exc()
-
-        matches = re.findall(r'File "<string>", line (\d+)', tb)
+        tb = traceback.extract_tb(sys.exc_info()[2])
 
         error_line = []
-        if matches:
-            error_line = [int(matches[0])]
+        if tb:
+            error_line = [tb[-1].lineno]
 
         return {
             "error": error_line,
-            "result": tb
+            "result": traceback.format_exc()
             }
